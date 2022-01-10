@@ -1,3 +1,64 @@
 // BUILD YOUR SERVER HERE
+//IMPORT SERVER
+const express = require('express')
 
-module.exports = {}; // EXPORT YOUR SERVER instead of {}
+//IMPORT MODELS
+const USERS = require('./users/model')
+
+//EXPRESS SERVER
+const server = express()
+//MIDDLEWARE
+server.use(express.json())
+
+//ENDPOINTS
+
+//HELLO WORLD
+
+// | GET | /hello         | console.log "hello, web 49!"
+server.get('/hello', (req, res) =>{
+    res.status(200).json('hello, web 49!')
+})
+
+// | POST | /api/users     | Creates a user using the information sent inside the `request body`
+server.post('/api/users', (req, res) => {
+    const { name, bio } = req.body
+    const newUser = USERS.insert({ name, bio })
+        .then (newUser => {
+            if (!name || !bio) {
+                res.status(400).json({ message: "Please provide name and bio for the user" })
+            } else {
+                res.status(201).json(newUser)
+            }
+        })
+        .catch (err => {
+            res.status(500).json({ message: "There was an error while saving the user to the database" })
+        })
+})
+
+// | GET  | /api/users     | Returns an array users
+server.get('/api/users', (req, res) => {
+   USERS.find()
+    .then(users => {
+        res.json(users)
+    })
+    .catch(err => {
+        res.status(500).json({ message: "The users information could not be retrieved" })
+    })
+})
+
+// | GET  | /api/users/:id | Returns the user object with the specified `id`
+
+
+
+
+// |DELETE| /api/users/:id | Removes the user with the specified `id` and returns the deleted user
+
+
+
+
+// | PUT  | /api/users/:id | Updates the user with the specified `id` using data from the `request body`. Returns the modified user
+
+
+
+//EXPORTS
+module.exports = server
