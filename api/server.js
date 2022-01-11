@@ -66,12 +66,41 @@ server.get('/api/users/:id', (req, res) => {
 
 // |DELETE| /api/users/:id | Removes the user with the specified `id` and returns the deleted user
 
-
+server.delete('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    const deletedUser = USERS.remove(id)
+    .then (deletedUser => {
+        if (!deletedUser) {
+            res.status(404).json({ message: "The user with the specified ID does not exist" })
+        } else {
+            res.json(deletedUser)
+        }
+    })
+        .catch(err => {
+            res.status(500).json({ message: "The user could not be removed" })
+        })
+})
 
 
 // | PUT  | /api/users/:id | Updates the user with the specified `id` using data from the `request body`. Returns the modified user
 
-
+server.put('/api/users/:id', (req, res) => {
+    const { id } = req.params;
+    const { name, bio } = req.body
+    const updatedUser = USERS.update(id, { name, bio })
+    .then (updatedUser => {
+        if (!updatedUser) {
+            res.status(404).json({ message: "The user with the specified ID does not exist" })
+        } else if (!name || !bio) {
+            res.status(400).json({ message: "Please provide name and bio for the user"})
+        } else {
+            res.json(updatedUser)
+        }
+    })
+        .catch(err => {
+            res.status(500).json({ message: "The user information could not be retrieved" })
+        })
+})
 
 //EXPORTS
 module.exports = server
